@@ -108,7 +108,8 @@ void set_music_volume(Music *music, int music_volume /* in percent */) {
 void get_music_files(Items_Array *out, const char *path) {
     DIR *FD = NULL;
     if((FD = opendir(path)) == NULL) {
-        printf("Directory \"%s\" not found", path);
+        endwin();
+        printf("Directory \"%s\" not found\n", path);
         exit(-1);
     }
 
