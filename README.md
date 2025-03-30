@@ -1,5 +1,6 @@
 # Tupl
 This is a simple TUI music player written in C
+![Screenshot](screenshot.png)
 
 ## Compiling
 Just build nob:
