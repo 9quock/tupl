@@ -8,7 +8,7 @@
 #define SRC_DIR "src/"
 #define BUILD_DIR "build/"
 
-/*#define RUN_AFTER_BUILD*/
+#define RUN_AFTER_BUILD
 
 int main(int argc, char **argv) {
     NOB_GO_REBUILD_URSELF(argc, argv);
@@ -18,9 +18,10 @@ int main(int argc, char **argv) {
 
     const char *raudio_files[] = {SRC_DIR"raudio/raudio.c"};
     if(needs_rebuild(BUILD_DIR"raudio.o", raudio_files, ARRAY_SIZE(raudio_files))) {
-        cmd_append(&cmd, "cc", "-c", "-o", BUILD_DIR"raudio.o", "-O3");
+        cmd_append(&cmd, "cc", "-c", "-o", BUILD_DIR"raudio.o");
         da_append_many(&cmd, raudio_files, ARRAY_SIZE(raudio_files));
-        cmd_append(&cmd, "-DTRACELOG(...)", "-DRAUDIO_STANDALONE", "-DSUPPORT_MODULE_RAUDIO", "-DSUPPORT_FILEFORMAT_MP3");
+        cmd_append(&cmd, "-DTRACELOG(...)", "-DRAUDIO_STANDALONE", "-DSUPPORT_MODULE_RAUDIO");
+        cmd_append(&cmd, "-DSUPPORT_FILEFORMAT_WAV", "-DSUPPORT_FILEFORMAT_OGG", "-DSUPPORT_FILEFORMAT_MP3", "-DSUPPORT_FILEFORMAT_QOA", "-DSUPPORT_FILEFORMAT_FLAC", "-DSUPPORT_FILEFORMAT_XM", "-DSUPPORT_FILEFORMAT_MOD");
         if (!cmd_run_sync_and_reset(&cmd)) return 1;
     }
 
