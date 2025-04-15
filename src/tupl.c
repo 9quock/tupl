@@ -254,7 +254,6 @@ void fillItemArrayWithMusicItemsFromPath(const char *path) {
             nob_sb_append_null(&new_path);
 
             fillItemArrayWithMusicItemsFromPath(new_path.items);
-
         }
     }
 }
@@ -530,7 +529,7 @@ int main() {
             SetMusicVolume(ctx->music, ctx->volume/100.f);
         );
 
-        if(IsMusicReady(ctx->music) && !IsMusicStreamPlaying(ctx->music) && ctx->just_finished) {
+        if(IsMusicReady(ctx->music) && !IsMusicStreamPlaying(ctx->music) && ctx->just_finished && GetMusicTimePlayed(ctx->music) == 0.f) {
             ctx->just_finished = false;
             mutexify(
                 playNext();
