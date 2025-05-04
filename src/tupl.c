@@ -203,7 +203,7 @@ void drawUI() {
         code \
         pthread_mutex_unlock(ctx->musicUpdaterThread_mut); \
     } while(0)
-void *musicUpdaterThread() {
+void *musicUpdaterThread(void __attribute__((unused)) *unused) { /* unused is needed or it wont build (sometimes) */
     struct timespec sleep_time;
     sleep_time.tv_sec = 0;
     sleep_time.tv_nsec = 10 * 1000000;
