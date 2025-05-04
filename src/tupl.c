@@ -507,7 +507,7 @@ int main() {
     
     /* Setup musicUpdaterThread */
     pthread_t music_updater_thread_pid;
-    pthread_mutex_t music_updater_thread_mut;
+    pthread_mutex_t music_updater_thread_mut = {0};
     ctx->musicUpdaterThread_mut = &music_updater_thread_mut;
     pthread_create(&music_updater_thread_pid, NULL, musicUpdaterThread, NULL);
 
