@@ -14,7 +14,8 @@
 #include "raudio/raudio.h"
 
 
-#define MAX_MUSIC_VOLUME 200
+#define MAX_MUSIC_VOLUME 100
+#define SEEK_APPLY 10 /* 0.1 seconds roughly */
 #define MUSIC_PATH "Music/" /* Relative to $HOME */
 
 #define TUPL_TEXT "TUPL  -  Simple TUI Music Player"
@@ -42,6 +43,8 @@ typedef struct {
         RANDOM,
     } shuffle;
     int volume;
+    float seekOffsetBuf;
+    float seekApplyTimeout;
     bool just_finished;
 
     MENU *menu;
@@ -114,7 +117,7 @@ void drawProgressBar() {
     float music_length = 0.f, music_played = 0.f;
     if(IsMusicReady(ctx->music)) {
         music_length = GetMusicTimeLength(ctx->music);
-        music_played = GetMusicTimePlayed(ctx->music);
+        music_played = GetMusicTimePlayed(ctx->music) + ctx->seekOffsetBuf;
     }
     mvaddstr(LINES-6, 1, nob_temp_sprintf(" %.2f / %.2f ", secToMin(music_played), secToMin(music_length)));
     nob_temp_reset();
@@ -211,6 +214,14 @@ void *musicUpdaterThread(void __attribute__((unused)) *unused) { /* unused is ne
     while(1) {
         nanosleep(&sleep_time, NULL);
         mutexify(
+            if(ctx->seekApplyTimeout && ctx->seekApplyTimeout >= 1) {
+                --ctx->seekApplyTimeout;
+                if(ctx->seekApplyTimeout == 1) {
+                    SeekMusicStream(ctx->music, fmin(GetMusicTimeLength(ctx->music), 
+                                                     fmax(0.f, GetMusicTimePlayed(ctx->music) + ctx->seekOffsetBuf)));
+                    ctx->seekOffsetBuf = 0;
+                }
+            }
             ctx->music.looping = false; /* It seems like something keeps setting it to true */
             if(IsMusicReady(ctx->music)) UpdateMusicStream(ctx->music);
         );
@@ -424,7 +435,9 @@ void handleSeekModeInput(int c) {
             drawMode();
             break;
         case 'h':
-            if(IsMusicReady(ctx->music)) SeekMusicStream(ctx->music, fmax(0.f, GetMusicTimePlayed(ctx->music) - 10.f)); /* Why is this so slow T-T (with MP3s at least) */
+            ctx->seekOffsetBuf -= 10.f;
+            if(ctx->seekOffsetBuf + GetMusicTimePlayed(ctx->music) < 0) ctx->seekOffsetBuf = 0;
+            ctx->seekApplyTimeout = SEEK_APPLY;
             break;
         case 'j':
             ctx->volume -= 5;
@@ -437,7 +450,9 @@ void handleSeekModeInput(int c) {
             drawVolume();
             break;
         case 'l':
-            if(IsMusicReady(ctx->music)) SeekMusicStream(ctx->music, fmin(GetMusicTimeLength(ctx->music), GetMusicTimePlayed(ctx->music) + 10.f));
+            ctx->seekOffsetBuf += 10.f;
+            if(ctx->seekOffsetBuf + GetMusicTimePlayed(ctx->music) > GetMusicTimeLength(ctx->music)) ctx->seekOffsetBuf = GetMusicTimeLength(ctx->music);
+            ctx->seekApplyTimeout = SEEK_APPLY;
             break;
         case ' ':
             IsMusicStreamPlaying(ctx->music) ? PauseMusicStream(ctx->music) : ResumeMusicStream(ctx->music);
