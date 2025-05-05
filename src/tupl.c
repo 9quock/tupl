@@ -25,6 +25,8 @@
 #define STOPED_TEXT " Stoped  "
 
 
+#define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
+
 typedef struct {
     ITEM **items;
     size_t count;
@@ -128,7 +130,7 @@ void drawProgressBar() {
     int max_length = COLS - x;
     int bar_length = 0; if(IsMusicReady(ctx->music)) bar_length = (float)music_played/music_length * max_length;
     hline(ACS_BULLET, max_length - 1);
-    hline(ACS_CKBOARD, bar_length);
+    hline(ACS_CKBOARD, MIN(bar_length, max_length - 1));
 }
 void drawCurrentMusic() {
     mvhline(LINES-4, 1, ' ', COLS-strlen(PLAYING_TEXT)-5);
