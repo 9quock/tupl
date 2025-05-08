@@ -403,8 +403,8 @@ void handleNormalModeInput(int c) {
             else set_current_item(ctx->menu, search_result);
             } break;
         case 13: /* enter */
-            selectItem(current_item(ctx->menu));
             mutexify({
+                selectItem(current_item(ctx->menu));
                 PlayMusicStream(ctx->music);
                 ctx->music.looping = false;
                 ctx->just_finished = true;
