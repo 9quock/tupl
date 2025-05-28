@@ -425,6 +425,12 @@ void handleNormalModeInput(int c) {
             if(ctx->shuffle > RANDOM) ctx->shuffle = STOP;
             drawShuffleMode();
             break;
+        case 'n':
+            mutexify(
+                playNext();
+            );
+            drawMusicState();
+            break;
         case 'r':
             drawUI();
             break;

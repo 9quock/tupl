@@ -39,6 +39,7 @@ Controls:
     | s     | Enter seek mode           |
     | f     | Enter find mode           |
     | m     | Cycle through queue modes |
+    | n     | Skip current file         |
     | r     | Redraw UI                 |
 
 - Seek mode (S)
