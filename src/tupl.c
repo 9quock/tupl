@@ -137,7 +137,7 @@ void drawCurrentMusic() {
     if(ctx->current_selected_music != NULL) {
         const char *name = item_name(ctx->current_selected_music);
         if(name != NULL) {
-            mvaddnstr(LINES-4, 2, name, COLS-strlen(PLAYING_TEXT)-5);
+            mvaddnstr(LINES-4, 2, name, COLS-strlen(PLAYING_TEXT)-7);
             return;
         }
     }
